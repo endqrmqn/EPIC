@@ -38,5 +38,7 @@ The primary goals of this project are for the codebase to be
 - The code should make it easy for others to extend or debug.
 
 
-Currently, the project's author is working on PIC code in Java
-and will port it over when he is done with its use.
+Currently, the author is prototyping several PIC components in Java
+as part of separate research work. Once those modules stabilize, 
+the functionality will be ported into this C/C++ codebase in a 
+clean, modular form.
