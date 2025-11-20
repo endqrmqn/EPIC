@@ -1,40 +1,48 @@
 #include <cmath>
+#pragma once
 
-/*
-    math/vec3.hpp
-    --------------
-
-    Lightweight 3-component vector type used throughout EPIC for small,
-    fixed-size 3D math: positions, velocities, accelerations, forces,
-    and general geometric or physical quantities.
-
-    This struct is intentionally minimal:
-      - trivially copyable
-      - no heap allocations
-      - no virtual functions
-      - plain-old-data layout (x, y, z contiguous in memory)
-
-    The API provides:
-      - basic arithmetic (+, -, scalar multiply/divide)
-      - geometric operations (dot, cross, length, normalization)
-      - projection of one vector onto another
-
-    Vec3 is designed for clarity and low overhead. For bulk particle
-    storage and high-performance kernels, EPIC uses SoA (structure-of-
-    arrays) containers instead; Vec3 is for single-vector math only.
-
-    All functions are `inline` for zero call overhead.
-
-    TODO:
-        Add constexpr support for all operations once C++20 integrations stabilize.
-        Add in-place operators (+=, -=, *=, /=) to reduce temporaries.
-        Add a fast-path normalize() variant for hotspots where zero-length vectors are impossible.
-        Add helper functions: distance(a, b), angle(a, b), lerp(a, b, t).
-        Consider SIMD-accelerated versions for inner-loop kernels.
-        Add Vec3f (float) for memory-intensive particle workloads.
-        Write unit tests for zero-length normalization, projection edge cases, and NaN behavior.
-*/
-
+/**
+ * @file vec3.hpp
+ *
+ * math/vec3.hpp
+ * --------------
+ *
+ * Lightweight 3-component vector type used throughout EPIC for small,
+ * fixed-size 3D math: positions, velocities, accelerations, forces,
+ * and general geometric or physical quantities.
+ *
+ * Purpose:
+ *   Provide a minimal, zero-overhead 3D vector for single-vector math
+ *   without the baggage of dynamic memory or heavy linear algebra
+ *   frameworks.
+ *
+ * Design:
+ *   - trivially copyable
+ *   - plain-old-data layout (x, y, z contiguous in memory)
+ *   - no heap allocations
+ *   - no virtual functions
+ *   - inline arithmetic for zero call overhead
+ *
+ * API includes:
+ *   - basic arithmetic (+, -, scalar multiply/divide)
+ *   - geometric operations (dot, cross, length, norm)
+ *   - vector projection
+ *
+ * Notes:
+ *   EPIC uses SoA (structure-of-arrays) layouts for bulk particle
+ *   storage and high-performance kernels; Vec3 is intended only for
+ *   local, single-vector operations.
+ *
+ * TODO:
+ *   - Add constexpr support to all operations once C++20 integrations stabilize.
+ *   - Add in-place operators (+=, -=, *=, /=) to reduce temporaries.
+ *   - Add fast-path normalize() variant for hotspots where zero-length
+ *     vectors are impossible.
+ *   - Add helpers: distance(a,b), angle(a,b), lerp(a,b,t).
+ *   - Consider SIMD-accelerated variants for hot loops.
+ *   - Add Vec3f (float) for memory-critical particle workloads.
+ *   - Write unit tests for zero-length normalization and projection edge cases.
+ */
 
 namespace math
 {

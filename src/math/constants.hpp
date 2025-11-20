@@ -1,31 +1,35 @@
 #pragma once
 #include<cmath>
 
-/*
-    math/constants.hpp
-    -------------------
+/**
+ * @file constants.hpp
+ *
+ * math/constants.hpp
+ * -------------------
+ *
+ * Core mathematical and physical constants used throughout EPIC.
+ *
+ * All constants in this header are provided as `constexpr` doubles for
+ * guaranteed compile-time evaluation and zero runtime overhead.
+ *
+ * Purpose:
+ *   - Provide a single authoritative source for numerical constants.
+ *   - Avoid magic numbers scattered across the codebase.
+ *   - Ensure consistency for physical models and numerical methods.
+ *
+ * Categories:
+ *   - Mathematical constants        (π, e)
+ *   - Electromagnetic constants     (ε₀, μ₀, c)
+ *   - Fundamental physical values   (e, m_e, m_p)
+ *   - Unit reference constants      (atomic mass unit, etc.)
+ *
+ * All values follow CODATA recommendations and are appropriate for
+ * high-precision scientific computing.
+ *
+ * TODO:
+ *   Nothing! This header is intentionally minimal and complete.
+ */
 
-    This header defines core mathematical and physical constants used
-    throughout EPIC. All constants are provided as `constexpr` doubles,
-    ensuring compile-time evaluation and zero runtime overhead.
-
-    The constants here serve as a central reference for numerical
-    algorithms, unit conversions, and physical models. They are kept
-    minimal and self-contained: no functions, no heavy dependencies,
-    and no state.
-
-    Categories:
-      - Mathematical constants   (π, e)
-      - Electromagnetic constants (ε₀, μ₀, c)
-      - Fundamental constants    (elementary charge, electron mass)
-      - Unit reference constants (atomic mass unit)
-
-    These values follow CODATA recommendations and are suitable for
-    high-precision scientific computing.
-
-    TODO:
-        Nothing! Looks good!
-*/
 
 namespace math
 {

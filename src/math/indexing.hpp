@@ -28,20 +28,71 @@
  *
  * Keep this file minimal and dependency-free. It is called constantly
  * throughout the simulation and must remain lightweight and inlinable.
+ *
+ * TODO:
+ *   Nothing! This header is intentionally minimal and complete.
  */
 
 namespace math 
 {
+    // ------------------------------------------
+    // Grid description + internal strides
+    // ------------------------------------------
     struct GridShape {
         size_t Nx, Ny, Nz;
         size_t sx, sy, sz;
 
-        GridShape(size_t Nx_, size_t Ny_, size_t Nz_,
-                  size_t sx_ = 1, size_t sy_ = 1, size_t sz_ = 1)
-            : Nx(Nx_), Ny(Ny_), Nz(Nz_), sx(sx_), sy(sy_), sz(sz_) {}
+        GridShape(size_t Nx_, size_t Ny_, size_t Nz_)
+            : Nx(Nx_), Ny(Ny_), Nz(Nz_),
+              sx(1),
+              sy(Nx_),
+              sz(Nx_ * Ny_) {}
     };
 
+    // ------------------------------------------
+    // Flatten (i, j, k) -> linear index
+    // ------------------------------------------
+    inline constexpr size_t idx(size_t i, size_t j, size_t k,
+                                const GridShape& g)
+    {
+        return i + j * g.sy + k * g.sz;
+    }
 
+    // ------------------------------------------
+    // Bounds check
+    // ------------------------------------------
+    inline constexpr bool in_bounds(int i, int j, int k,
+                                    const GridShape& g)
+    {
+        return (i >= 0 && i < (int)g.Nx) &&
+               (j >= 0 && j < (int)g.Ny) &&
+               (k >= 0 && k < (int)g.Nz);
+    }
 
+    // ------------------------------------------
+    // Periodic wrap helper
+    // ------------------------------------------
+    inline constexpr size_t wrap(int x, int N)
+    {
+        return (x % N + N) % N;
+    }
 
+    // ------------------------------------------
+    // Neighbor offsets for stencils
+    // ------------------------------------------
+    struct Offset3 { int di, dj, dk; };
+
+    inline constexpr size_t neighbor(size_t i, size_t j, size_t k,
+                                     const Offset3& o,
+                                     const GridShape& g)
+    {
+        return idx(i + o.di, j + o.dj, k + o.dk, g);
+    }
+
+    // optional: 6-axis stencil offsets
+    static constexpr Offset3 axial6[6] = {
+        {+1,0,0}, {-1,0,0},
+        {0,+1,0}, {0,-1,0},
+        {0,0,+1}, {0,0,-1}
+    };
 } //namespace math
