@@ -45,6 +45,10 @@ namespace kernels::math::structures{
         return a *= b;
     }
 
+    inline vec2 operator*(const types::real& b, vec2 a){
+        return a *= b;
+    }
+
     inline vec2 operator/(vec2 a, const types::real& b){
         return a /= b;
     }
@@ -61,11 +65,16 @@ namespace kernels::math::structures{
         );
     }
 
+    inline vec2 cross(const vec2& a, types::real b){
+        return vec2(-b * a.y, b * a.x);
+    }
+
     inline types::real norm(const vec2& a){
         return std::sqrt(a.x * a.x + a.y * a.y);
     }
 
     inline vec2 unitv(const vec2& a){
-        return a/(norm(a));
+        types::real n = norm(a);
+        return (n == 0) ? vec2{} : a / n;
     }
 }

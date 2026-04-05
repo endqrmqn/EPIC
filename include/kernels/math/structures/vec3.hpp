@@ -55,6 +55,10 @@ namespace kernels::math::structures {
         return a *= b;
     }
 
+    inline vec3 operator*(const types::real& b, vec3 a){
+        return a *= b;
+    }
+
     inline vec3 operator/(vec3 a, const types::real& b) {
         return a /= b;
     }

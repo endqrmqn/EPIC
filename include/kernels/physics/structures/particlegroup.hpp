@@ -6,6 +6,7 @@
 #include "include/types.hpp"
 #include "include/kernels/math/structures/vec3.hpp"
 #include "include/kernels/physics/structures/mesh.hpp"
+#include "include/kernels/physics/structures/field.hpp"
 
 namespace kernels::physics::structures{
     template<typename T>
@@ -78,12 +79,53 @@ namespace kernels::physics::structures{
         }
         return retAcc;
     }
-    //need to finish
-    vector<vec2> accFromField(_2ParticleGroup& p, const _2Mesh &field){
-        vector<vec2> retAcc(size(p));
 
+    vector<vec2> accFromLorentzField(_2ParticleGroup& p, const _2Mesh &mesh, const _2Field<vec2> &E, const _2Field<vec3> &B){
+        std::size_t n = size(p);
+        vector<vec2> retAcc(n);
+
+        for (std::size_t i = 0; i < n; ++i){
+            //find cell vals for this pos
+            real ix, iy;
+            
+            //oob and assign to ix, iy
+            if (!mesh.pos_to_coords(p.pos[i], ix, iy)){
+                retAcc[i] = vec2{};
+                continue;
+            }
+            
+            vec2 Eval = E.valueAt(ix, iy);
+            vec3 Bval = B.valueAt(ix, iy);
+
+            real inertial = p.charge[i]/p.mass[i];
+
+            retAcc[i] = inertial * (Eval + kernels::math::structures::cross(p.vel[i], Bval.z));
+
+        }
+        
         return retAcc;
     }
+
+    vector<vec2> accFromMField(_2ParticleGroup& p, const _2Mesh &mesh, const _2Field<vec2> &m){
+        std::size_t n = size(p);
+        vector<vec2> retAcc(n);
+
+        for (std::size_t i = 0; i < n; ++i){
+            real ix, iy;
+
+            if (!mesh.pos_to_coords(p.pos[i], ix, iy)){
+                retAcc[i] = vec2{};
+                continue;
+            }
+
+            vec2 Mval = m.valueAt(ix, iy);
+
+            retAcc[i] = Mval;
+        }
+        
+        return retAcc;
+    }
+
     void resetAcceleration(_2ParticleGroup& p){
         for (std::size_t i = 0; i < size(p); ++i){
             p.acc[i] = vec2{};
@@ -189,10 +231,50 @@ namespace kernels::physics::structures{
         }
         return retAcc;
     }
-    //need to finish
-    vector<vec3> accFromField(_3ParticleGroup& p, const _3Mesh &field){
-        vector<vec3> retAcc(size(p));
 
+    vector<vec3> accFromLorentzField(_3ParticleGroup& p, const _3Mesh &mesh, const _3Field<vec3> &E, const _3Field<vec3> &B){
+        std::size_t n = size(p);
+        vector<vec3> retAcc(n);
+
+        for (std::size_t i = 0; i < n; ++i){
+            //find cell vals for this pos
+            real ix, iy, iz;
+            
+            //oob and assign to ix, iy
+            if (!mesh.pos_to_coords(p.pos[i], ix, iy, iz)){
+                retAcc[i] = vec3{};
+                continue;
+            }
+            
+            vec3 Eval = E.valueAt(ix, iy, iz);
+            vec3 Bval = B.valueAt(ix, iy, iz);
+
+            real inertial = p.charge[i]/p.mass[i];
+
+            retAcc[i] = inertial * (Eval + kernels::math::structures::cross(p.vel[i], Bval));
+
+        }
+        
+        return retAcc;
+    }
+
+    vector<vec3> accFromMField(_3ParticleGroup& p, const _3Mesh &mesh, const _3Field<vec3> &m){
+        std::size_t n = size(p);
+        vector<vec3> retAcc(n);
+
+        for (std::size_t i = 0; i < n; ++i){
+            real ix, iy, iz;
+
+            if (!mesh.pos_to_coords(p.pos[i], ix, iy, iz)){
+                retAcc[i] = vec3{};
+                continue;
+            }
+
+            vec3 Mval = m.valueAt(ix, iy, iz);
+
+            retAcc[i] = Mval;
+        }
+        
         return retAcc;
     }
     void resetAcceleration(_3ParticleGroup& p){
