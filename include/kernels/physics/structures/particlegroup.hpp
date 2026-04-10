@@ -132,28 +132,6 @@ namespace kernels::physics::structures{
         }
     }
 
-    void verletStep(_2ParticleGroup& p, const vector<vector<vec2>>& accs, const real &dt){        
-        vector<vec2> old_acc = p.acc;
-        std::size_t n = size(p);
-        
-        //update pos
-        for (std::size_t i = 0; i < n; ++i){
-            p.pos[i] += p.vel[i] * dt + old_acc[i] * (static_cast<real>(0.5) * dt * dt);
-        }
-
-        //update acc
-        resetAcceleration(p);
-        for (const auto& acc_vector : accs){
-            for (std::size_t i = 0; i < n; ++i){
-                p.acc[i] += acc_vector[i];
-            }
-        }
-        //update vel
-        for (std::size_t i = 0; i < n; ++i){
-            p.vel[i] += (old_acc[i] + p.acc[i]) * (static_cast<real>(0.5) * dt);
-        }
-    }
-
     vector<real> getKineticEnergy(const _2ParticleGroup& p){
         std::size_t n = size(p);
         vector<real> ke(n);
@@ -280,28 +258,6 @@ namespace kernels::physics::structures{
     void resetAcceleration(_3ParticleGroup& p){
         for (std::size_t i = 0; i < size(p); ++i){
             p.acc[i] = vec3{};
-        }
-    }
-
-    void verletStep(_3ParticleGroup& p, const vector<vector<vec3>>& accs, const real &dt){        
-        vector<vec3> old_acc = p.acc;
-        std::size_t n = size(p);
-        
-        //update pos
-        for (std::size_t i = 0; i < n; ++i){
-            p.pos[i] += p.vel[i] * dt + old_acc[i] * (static_cast<real>(0.5) * dt * dt);
-        }
-
-        //update acc
-        resetAcceleration(p);
-        for (const auto& acc_vector : accs){
-            for (std::size_t i = 0; i < n; ++i){
-                p.acc[i] += acc_vector[i];
-            }
-        }
-        //update vel
-        for (std::size_t i = 0; i < n; ++i){
-            p.vel[i] += (old_acc[i] + p.acc[i]) * (static_cast<real>(0.5) * dt);
         }
     }
 }

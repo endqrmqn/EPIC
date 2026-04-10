@@ -30,15 +30,28 @@ namespace kernels::physics::structures{
             return data[i + n_x * j];
         }
 
-        inline T& valueAt(real i, real j){
-            iR = static_cast<int>(i);
-            jR = static_cast<int>(i);
-            return kernels::math::algs::bilerp(i - iR, j - jR, 
-                std::array<real>{
-                data[iR + n_x * jR],
+        inline T valueAt(real i, real j) const{
+            // Continuous index (i,j) -> surrounding cell corners for bilerp
+            int iR = static_cast<int>(i);
+            int jR = static_cast<int>(j);
+
+            // Clamp to valid range so iR+1, jR+1 are in-bounds
+            if (iR < 0) iR = 0;
+            if (jR < 0) jR = 0;
+            if (iR > n_x - 2) iR = n_x - 2;
+            if (jR > n_y - 2) jR = n_y - 2;
+
+            const real tx = i - static_cast<real>(iR);
+            const real ty = j - static_cast<real>(jR);
+
+            std::array<T, 4> vals{
+                data[iR +     n_x * jR],
                 data[iR + 1 + n_x * jR],
-                data[iR + n_x * (jR+1)],
-                data[iR + 1 + n_x * (jR+1)]});
+                data[iR +     n_x * (jR + 1)],
+                data[iR + 1 + n_x * (jR + 1)]
+            };
+
+            return kernels::math::algs::bilerp(tx, ty, vals);
         }
     };
 
@@ -56,21 +69,34 @@ namespace kernels::physics::structures{
             return data[i + n_x*j + n_x*n_y*k];
         }
 
-        inline T& valueAt(real i, real j, real k){
-            iR = static_cast<int>(i);
-            jR = static_cast<int>(j);
-            kR = static_cast<int>(k);
-            return kernels::math::algs::trilerp(i - iR, j - jR, k - kR
-                std::array<real>{
-                data[iR + n_x * jR + n_x*n_y*kR],
-                data[iR + 1 + n_x * jR + n_x*n_y*kR],
-                data[iR + n_x * (jR+1) + n_x*n_y*kR],
-                data[iR + 1 + n_x * (jR+1) + n_x*n_y*kR],
-                data[iR + n_x * jR + n_x*n_y*(kR+1)],
-                data[iR + 1 + n_x * jR + n_x*n_y*(kR+1)],
-                data[iR + n_x * (jR+1) + n_x*n_y*(kR+1)],
-                data[iR + 1 + n_x * (jR+1) + n_x*n_y*(kR+1)]
-                });
+        inline T valueAt(real i, real j, real k) const{
+            int iR = static_cast<int>(i);
+            int jR = static_cast<int>(j);
+            int kR = static_cast<int>(k);
+
+            if (iR < 0) iR = 0;
+            if (jR < 0) jR = 0;
+            if (kR < 0) kR = 0;
+            if (iR > n_x - 2) iR = n_x - 2;
+            if (jR > n_y - 2) jR = n_y - 2;
+            if (kR > n_z - 2) kR = n_z - 2;
+
+            const real tx = i - static_cast<real>(iR);
+            const real ty = j - static_cast<real>(jR);
+            const real tz = k - static_cast<real>(kR);
+
+            std::array<T, 8> vals{
+                data[iR     + n_x * jR     + n_x*n_y * kR],
+                data[iR + 1 + n_x * jR     + n_x*n_y * kR],
+                data[iR     + n_x * (jR+1) + n_x*n_y * kR],
+                data[iR + 1 + n_x * (jR+1) + n_x*n_y * kR],
+                data[iR     + n_x * jR     + n_x*n_y * (kR+1)],
+                data[iR + 1 + n_x * jR     + n_x*n_y * (kR+1)],
+                data[iR     + n_x * (jR+1) + n_x*n_y * (kR+1)],
+                data[iR + 1 + n_x * (jR+1) + n_x*n_y * (kR+1)]
+            };
+
+            return kernels::math::algs::trilerp(tx, ty, tz, vals);
         }
     };
 }

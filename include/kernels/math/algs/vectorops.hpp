@@ -23,11 +23,126 @@ namespace kernels::math::algs{
     template<typename T>
     using _3Field = kernels::physics::structures::_3Field<T>;
 
+    // -----------------------------
+    // Interior-only operators
+    // -----------------------------
+
+    // Gradient at a single interior cell of a 2D scalar field.
+    // Precondition: 1 <= i < nx-1, 1 <= j < ny-1.
+    inline vec2 gradPointInterior(const _2Mesh& m,
+                                  const _2Field<real>& f,
+                                  int i, int j){
+        const real dx = m.dx();
+        const real dy = m.dy();
+
+        const real dfdx =
+            (f.valueAt(i + 1, j) - f.valueAt(i - 1, j)) / (2.0 * dx);
+        const real dfdy =
+            (f.valueAt(i, j + 1) - f.valueAt(i, j - 1)) / (2.0 * dy);
+
+        return vec2(dfdx, dfdy);
+    }
+
+    // Gradient at a single interior cell of a 3D scalar field.
+    // Precondition: 1 <= i < nx-1, 1 <= j < ny-1, 1 <= k < nz-1.
+    inline vec3 gradPointInterior(const _3Mesh& m,
+                                  const _3Field<real>& f,
+                                  int i, int j, int k){
+        const real dx = m.dx();
+        const real dy = m.dy();
+        const real dz = m.dz();
+
+        const real dfdx =
+            (f.valueAt(i + 1, j, k) - f.valueAt(i - 1, j, k)) / (2.0 * dx);
+        const real dfdy =
+            (f.valueAt(i, j + 1, k) - f.valueAt(i, j - 1, k)) / (2.0 * dy);
+        const real dfdz =
+            (f.valueAt(i, j, k + 1) - f.valueAt(i, j, k - 1)) / (2.0 * dz);
+
+        return vec3(dfdx, dfdy, dfdz);
+    }
+
+    // Divergence at a single interior cell of a 2D vector field F = (Fx, Fy).
+    // Precondition: 1 <= i < nx-1, 1 <= j < ny-1.
+    inline real divPointInterior(const _2Mesh& m,
+                                 const _2Field<vec2>& F,
+                                 int i, int j){
+        const real dx = m.dx();
+        const real dy = m.dy();
+
+        const real dFxdx =
+            (F.valueAt(i + 1, j).x - F.valueAt(i - 1, j).x) / (2.0 * dx);
+        const real dFydy =
+            (F.valueAt(i, j + 1).y - F.valueAt(i, j - 1).y) / (2.0 * dy);
+
+        return dFxdx + dFydy;
+    }
+
+    // Divergence at a single interior cell of a 3D vector field F = (Fx, Fy, Fz).
+    // Precondition: 1 <= i < nx-1, 1 <= j < ny-1, 1 <= k < nz-1.
+    inline real divPointInterior(const _3Mesh& m,
+                                 const _3Field<vec3>& F,
+                                 int i, int j, int k){
+        const real dx = m.dx();
+        const real dy = m.dy();
+        const real dz = m.dz();
+
+        const real dFxdx =
+            (F.valueAt(i + 1, j, k).x - F.valueAt(i - 1, j, k).x) / (2.0 * dx);
+        const real dFydy =
+            (F.valueAt(i, j + 1, k).y - F.valueAt(i, j - 1, k).y) / (2.0 * dy);
+        const real dFzdz =
+            (F.valueAt(i, j, k + 1).z - F.valueAt(i, j, k - 1).z) / (2.0 * dz);
+
+        return dFxdx + dFydy + dFzdz;
+    }
+
+    // Curl at a single interior cell of a 3D vector field F.
+    // Precondition: 1 <= i < nx-1, 1 <= j < ny-1, 1 <= k < nz-1.
+    inline vec3 curlPointInterior(const _3Mesh& m,
+                                  const _3Field<vec3>& F,
+                                  int i, int j, int k){
+        const real dx = m.dx();
+        const real dy = m.dy();
+        const real dz = m.dz();
+
+        const vec3 Fx_plus  = F.valueAt(i,   j,   k+1);
+        const vec3 Fx_minus = F.valueAt(i,   j,   k-1);
+        const vec3 Fy_plus  = F.valueAt(i+1, j,   k);
+        const vec3 Fy_minus = F.valueAt(i-1, j,   k);
+        const vec3 Fz_plus  = F.valueAt(i,   j+1, k);
+        const vec3 Fz_minus = F.valueAt(i,   j-1, k);
+
+        const real dFz_dy = (Fz_plus.z - Fz_minus.z) / (2.0 * dy);
+        const real dFy_dz = (Fx_plus.y - Fx_minus.y) / (2.0 * dz);
+
+        const real dFx_dz = (Fx_plus.x - Fx_minus.x) / (2.0 * dz);
+        const real dFz_dx = (Fy_plus.z - Fy_minus.z) / (2.0 * dx);
+
+        const real dFy_dx = (Fy_plus.y - Fy_minus.y) / (2.0 * dx);
+        const real dFx_dy = (Fz_plus.x - Fz_minus.x) / (2.0 * dy);
+
+        return vec3(
+            dFz_dy - dFy_dz,
+            dFx_dz - dFz_dx,
+            dFy_dx - dFx_dy
+        );
+    }
+
+    // -----------------------------
+    // Boundary-aware wrappers
+    // -----------------------------
+
     inline vec2 gradPoint(const _2Mesh& m,
                           const _2Field<real>& f,
                           int i, int j){
         const int nx = m.nx_cells();
         const int ny = m.ny_cells();
+
+        if (i > 0 && i < nx - 1 && j > 0 && j < ny - 1){
+            return gradPointInterior(m, f, i, j);
+        }
+
         const real dx = m.dx();
         const real dy = m.dy();
 
@@ -60,6 +175,13 @@ namespace kernels::math::algs{
         const int nx = m.nx_cells();
         const int ny = m.ny_cells();
         const int nz = m.nz_cells();
+
+        if (i > 0 && i < nx - 1 &&
+            j > 0 && j < ny - 1 &&
+            k > 0 && k < nz - 1){
+            return gradPointInterior(m, f, i, j, k);
+        }
+
         const real dx = m.dx();
         const real dy = m.dy();
         const real dz = m.dz();
@@ -94,16 +216,19 @@ namespace kernels::math::algs{
         return vec3(dfdx, dfdy, dfdz);
     }
 
-    // Divergence of vector field in 2D: F = (Fx, Fy)
     inline real divPoint(const _2Mesh& m,
                          const _2Field<vec2>& F,
                          int i, int j){
         const int nx = m.nx_cells();
         const int ny = m.ny_cells();
+
+        if (i > 0 && i < nx - 1 && j > 0 && j < ny - 1){
+            return divPointInterior(m, F, i, j);
+        }
+
         const real dx = m.dx();
         const real dy = m.dy();
 
-        // dFx/dx
         real dFxdx;
         if (i <= 0){
             dFxdx = (F.valueAt(1, j).x - F.valueAt(0, j).x) / dx;
@@ -113,7 +238,6 @@ namespace kernels::math::algs{
             dFxdx = (F.valueAt(i + 1, j).x - F.valueAt(i - 1, j).x) / (2.0 * dx);
         }
 
-        // dFy/dy
         real dFydy;
         if (j <= 0){
             dFydy = (F.valueAt(i, 1).y - F.valueAt(i, 0).y) / dy;
@@ -132,11 +256,17 @@ namespace kernels::math::algs{
         const int nx = m.nx_cells();
         const int ny = m.ny_cells();
         const int nz = m.nz_cells();
+
+        if (i > 0 && i < nx - 1 &&
+            j > 0 && j < ny - 1 &&
+            k > 0 && k < nz - 1){
+            return divPointInterior(m, F, i, j, k);
+        }
+
         const real dx = m.dx();
         const real dy = m.dy();
         const real dz = m.dz();
 
-        // dFx/dx
         real dFxdx;
         if (i <= 0){
             dFxdx = (F.valueAt(1, j, k).x - F.valueAt(0, j, k).x) / dx;
@@ -146,7 +276,6 @@ namespace kernels::math::algs{
             dFxdx = (F.valueAt(i + 1, j, k).x - F.valueAt(i - 1, j, k).x) / (2.0 * dx);
         }
 
-        // dFy/dy
         real dFydy;
         if (j <= 0){
             dFydy = (F.valueAt(i, 1, k).y - F.valueAt(i, 0, k).y) / dy;
@@ -156,7 +285,6 @@ namespace kernels::math::algs{
             dFydy = (F.valueAt(i, j + 1, k).y - F.valueAt(i, j - 1, k).y) / (2.0 * dy);
         }
 
-        // dFz/dz
         real dFzdz;
         if (k <= 0){
             dFzdz = (F.valueAt(i, j, 1).z - F.valueAt(i, j, 0).z) / dz;
@@ -175,6 +303,13 @@ namespace kernels::math::algs{
         const int nx = m.nx_cells();
         const int ny = m.ny_cells();
         const int nz = m.nz_cells();
+
+        if (i > 0 && i < nx - 1 &&
+            j > 0 && j < ny - 1 &&
+            k > 0 && k < nz - 1){
+            return curlPointInterior(m, F, i, j, k);
+        }
+
         const real dx = m.dx();
         const real dy = m.dy();
         const real dz = m.dz();
