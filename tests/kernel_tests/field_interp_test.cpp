@@ -1,12 +1,12 @@
 #include <cmath>
 #include <iostream>
 
-#include "include/types.hpp"
-#include "include/kernels/math/structures/vec2.hpp"
-#include "include/kernels/math/structures/vec3.hpp"
-#include "include/kernels/physics/structures/mesh.hpp"
-#include "include/kernels/physics/structures/field.hpp"
-#include "include/constants.hpp"
+#include "../../include/types.hpp"
+#include "../../include/kernels/math/structures/vec2.hpp"
+#include "../../include/kernels/math/structures/vec3.hpp"
+#include "../../include/kernels/physics/structures/mesh.hpp"
+#include "../../include/kernels/physics/structures/field.hpp"
+#include "../../include/constants.hpp"
 
 using types::real;
 using kernels::math::structures::vec2;

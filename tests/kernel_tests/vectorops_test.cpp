@@ -1,10 +1,10 @@
 #include <cmath>
 #include <iostream>
 
-#include "include/types.hpp"
-#include "include/kernels/math/algs/vectorops.hpp"
-#include "include/kernels/physics/structures/mesh.hpp"
-#include "include/kernels/physics/structures/field.hpp"
+#include "../../include/types.hpp"
+#include "../../include/kernels/math/algs/vectorops.hpp"
+#include "../../include/kernels/physics/structures/mesh.hpp"
+#include "../../include/kernels/physics/structures/field.hpp"
 
 using kernels::physics::structures::_2Mesh;
 using kernels::physics::structures::_2Field;

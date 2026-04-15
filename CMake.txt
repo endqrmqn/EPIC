@@ -1,0 +1,22 @@
+cmake_minimum_required(VERSION 3.16)
+project(EPIC CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include_directories(${CMAKE_SOURCE_DIR})
+
+add_executable(env_two_particle_test
+    tests/env_two_particle_test.cpp
+    src/engine/core/environment.cpp
+)
+
+target_compile_definitions(env_two_particle_test
+    PRIVATE EPIC_USE_MULTIGRID_POISSON
+)
+
+target_compile_options(env_two_particle_test
+    PRIVATE
+        $<$<CONFIG:Release>:-O3 -DNDEBUG>
+        $<$<CONFIG:RelWithDebInfo>:-O3 -DNDEBUG>
+)

@@ -29,6 +29,8 @@ namespace kernels::math::algs{
 
     // Gradient at a single interior cell of a 2D scalar field.
     // Precondition: 1 <= i < nx-1, 1 <= j < ny-1.
+    //
+    // Use standard centred second-order differences in the interior.
     inline vec2 gradPointInterior(const _2Mesh& m,
                                   const _2Field<real>& f,
                                   int i, int j){
@@ -45,6 +47,8 @@ namespace kernels::math::algs{
 
     // Gradient at a single interior cell of a 3D scalar field.
     // Precondition: 1 <= i < nx-1, 1 <= j < ny-1, 1 <= k < nz-1.
+    //
+    // Centred second-order differences in all directions.
     inline vec3 gradPointInterior(const _3Mesh& m,
                                   const _3Field<real>& f,
                                   int i, int j, int k){
@@ -64,6 +68,8 @@ namespace kernels::math::algs{
 
     // Divergence at a single interior cell of a 2D vector field F = (Fx, Fy).
     // Precondition: 1 <= i < nx-1, 1 <= j < ny-1.
+    //
+    // Centred second-order differences on each component.
     inline real divPointInterior(const _2Mesh& m,
                                  const _2Field<vec2>& F,
                                  int i, int j){

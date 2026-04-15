@@ -86,10 +86,12 @@ namespace kernels::physics::structures{
 
         for (std::size_t i = 0; i < n; ++i){
             //find cell vals for this pos
-            real ix, iy;
+            real ix = (p.pos[i].x - mesh.x_init) / mesh.dx() - static_cast<real>(0.5);
+            real iy = (p.pos[i].y - mesh.y_init) / mesh.dy() - static_cast<real>(0.5);
             
             //oob and assign to ix, iy
-            if (!mesh.pos_to_coords(p.pos[i], ix, iy)){
+            if (p.pos[i].x < mesh.x_init || p.pos[i].x > mesh.x_finl ||
+                p.pos[i].y < mesh.y_init || p.pos[i].y > mesh.y_finl){
                 retAcc[i] = vec2{};
                 continue;
             }
@@ -111,9 +113,11 @@ namespace kernels::physics::structures{
         vector<vec2> retAcc(n);
 
         for (std::size_t i = 0; i < n; ++i){
-            real ix, iy;
+            real ix = (p.pos[i].x - mesh.x_init) / mesh.dx() - static_cast<real>(0.5);
+            real iy = (p.pos[i].y - mesh.y_init) / mesh.dy() - static_cast<real>(0.5);
 
-            if (!mesh.pos_to_coords(p.pos[i], ix, iy)){
+            if (p.pos[i].x < mesh.x_init || p.pos[i].x > mesh.x_finl ||
+                p.pos[i].y < mesh.y_init || p.pos[i].y > mesh.y_finl){
                 retAcc[i] = vec2{};
                 continue;
             }
@@ -216,10 +220,14 @@ namespace kernels::physics::structures{
 
         for (std::size_t i = 0; i < n; ++i){
             //find cell vals for this pos
-            real ix, iy, iz;
+            real ix = (p.pos[i].x - mesh.x_init) / mesh.dx() - static_cast<real>(0.5);
+            real iy = (p.pos[i].y - mesh.y_init) / mesh.dy() - static_cast<real>(0.5);
+            real iz = (p.pos[i].z - mesh.z_init) / mesh.dz() - static_cast<real>(0.5);
             
             //oob and assign to ix, iy
-            if (!mesh.pos_to_coords(p.pos[i], ix, iy, iz)){
+            if (p.pos[i].x < mesh.x_init || p.pos[i].x > mesh.x_finl ||
+                p.pos[i].y < mesh.y_init || p.pos[i].y > mesh.y_finl ||
+                p.pos[i].z < mesh.z_init || p.pos[i].z > mesh.z_finl){
                 retAcc[i] = vec3{};
                 continue;
             }
@@ -241,9 +249,13 @@ namespace kernels::physics::structures{
         vector<vec3> retAcc(n);
 
         for (std::size_t i = 0; i < n; ++i){
-            real ix, iy, iz;
+            real ix = (p.pos[i].x - mesh.x_init) / mesh.dx() - static_cast<real>(0.5);
+            real iy = (p.pos[i].y - mesh.y_init) / mesh.dy() - static_cast<real>(0.5);
+            real iz = (p.pos[i].z - mesh.z_init) / mesh.dz() - static_cast<real>(0.5);
 
-            if (!mesh.pos_to_coords(p.pos[i], ix, iy, iz)){
+            if (p.pos[i].x < mesh.x_init || p.pos[i].x > mesh.x_finl ||
+                p.pos[i].y < mesh.y_init || p.pos[i].y > mesh.y_finl ||
+                p.pos[i].z < mesh.z_init || p.pos[i].z > mesh.z_finl){
                 retAcc[i] = vec3{};
                 continue;
             }

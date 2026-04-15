@@ -65,8 +65,10 @@ namespace kernels::math::structures{
         );
     }
 
-    inline vec2 cross(const vec2& a, types::real b){
-        return vec2(-b * a.y, b * a.x);
+    // Cross product of a 2D vector with a scalar Bz, interpreted as
+    // v × (0,0,Bz) = (v_y * Bz, -v_x * Bz, 0) projected back to 2D.
+    inline vec2 cross(const vec2& a, types::real Bz){
+        return vec2(a.y * Bz, -a.x * Bz);
     }
 
     inline types::real norm(const vec2& a){
